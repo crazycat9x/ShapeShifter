@@ -10,7 +10,7 @@ function getMousePos(canvas, evt) {
 }
 
 class Shape {
-  constructor(context, fill) {
+  constructor(context, fill = null) {
     this.context = context;
     this.fill = fill;
   }
@@ -30,7 +30,7 @@ class Shape {
   }
 
   draw() {
-    this.context.restore();
+    this.context.save();
     this.fill !== null && (this.context.fillStyle = fill);
 
     this.createPath();
@@ -57,6 +57,40 @@ class Rect extends Shape {
     this.context.beginPath();
     this.context.rect(this.x, this.y, this.width, this.height);
     this.context.closePath();
+  }
+}
+
+class Triangle extends Shape {
+  constructor(context, side, cx, cy, fill = null) {
+    super(context, fill);
+    this.side = side;
+    this.cx = cx;
+    this.cy = cy;
+  }
+
+  setCenterPosition(x, y) {
+    this.cx = x;
+    this.cy = y;
+  }
+
+  createPath() {
+    this.context.save();
+    const h = this.side * (Math.sqrt(3) / 2);
+
+    this.context.translate(this.cx, this.cy);
+
+    this.context.beginPath();
+
+    this.context.moveTo(0, -h / 2);
+    this.context.lineTo(-this.side / 2, h / 2);
+    this.context.lineTo(this.side / 2, h / 2);
+    this.context.lineTo(0, -h / 2);
+
+    this.context.stroke();
+    this.context.fill();
+
+    this.context.closePath();
+    this.context.restore();
   }
 }
 
@@ -103,6 +137,7 @@ const ctx = canvas.getContext("2d");
 const shapesState = [];
 shapesState.push(new Rect(ctx, 50, 50, 50, 50));
 shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
+shapesState.push(new Triangle(ctx, 50, 150, 150));
 
 canvas.width = 1024;
 canvas.height = 768;
