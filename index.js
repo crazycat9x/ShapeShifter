@@ -60,6 +60,26 @@ class Rect extends Shape {
   }
 }
 
+class Circle extends Shape {
+  constructor(context, cx, cy, radius, fill = null) {
+    super(context, fill);
+    this.cx = cx;
+    this.cy = cy;
+    this.radius = radius;
+  }
+
+  setCenterPosition(x, y) {
+    this.cx = x;
+    this.cy = y;
+  }
+
+  createPath() {
+    this.context.beginPath();
+    this.context.arc(this.cx, this.cy, this.radius, 0, 2 * Math.PI);
+    this.context.closePath();
+  }
+}
+
 class Triangle extends Shape {
   constructor(context, side, cx, cy, fill = null) {
     super(context, fill);
@@ -138,6 +158,7 @@ const shapesState = [];
 shapesState.push(new Rect(ctx, 50, 50, 50, 50));
 shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
 shapesState.push(new Triangle(ctx, 50, 150, 150));
+shapesState.push(new Circle(ctx, 200, 200, 25));
 
 canvas.width = 1024;
 canvas.height = 768;
