@@ -10,10 +10,11 @@ function getMousePos(canvas, evt) {
 }
 
 class Shape {
-  constructor(context, cx, cy, fill = null) {
+  constructor(context, cx, cy, rotationDegree, fill = null) {
     this.context = context;
     this.cx = cx;
     this.cy = cy;
+    this.rotationDegree = rotationDegree;
     this.fill = fill;
   }
 
@@ -33,7 +34,16 @@ class Shape {
   }
 
   createPath() {
-    throw new Error("not implemented");
+    this.context.save();
+    if (this.rotationDegree !== 0) {
+      this.context.translate(this.cx, this.cy);
+      this.context.rotate((this.rotationDegree * Math.PI) / 180);
+      this.context.translate(-this.cx, -this.cy);
+    }
+  }
+
+  rotate(degree) {
+    this.rotationDegree += degree;
   }
 
   draw() {
@@ -47,8 +57,8 @@ class Shape {
 }
 
 class Rect extends Shape {
-  constructor(context, x, y, width, height, fill = null) {
-    super(context, fill);
+  constructor(context, x, y, width, height, rotationDegree = 0, fill = null) {
+    super(context, x + width / 2, y + height / 2, rotationDegree, fill);
     this.x = x;
     this.y = y;
     this.width = width;
@@ -63,28 +73,32 @@ class Rect extends Shape {
   }
 
   createPath() {
+    super.createPath();
     this.context.beginPath();
     this.context.rect(this.x, this.y, this.width, this.height);
     this.context.closePath();
+    this.context.restore();
   }
 }
 
 class Circle extends Shape {
-  constructor(context, cx, cy, radius, fill = null) {
-    super(context, cx, cy, fill);
+  constructor(context, cx, cy, radius, rotationDegree = 0, fill = null) {
+    super(context, cx, cy, rotationDegree, fill);
     this.radius = radius;
   }
 
   createPath() {
+    super.createPath();
     this.context.beginPath();
     this.context.arc(this.cx, this.cy, this.radius, 0, 2 * Math.PI);
     this.context.closePath();
+    this.context.restore();
   }
 }
 
 class Triangle extends Shape {
-  constructor(context, side, cx, cy, fill = null) {
-    super(context, cx, cy, fill);
+  constructor(context, side, cx, cy, rotationDegree = 0, fill = null) {
+    super(context, cx, cy, rotationDegree, fill);
     this.side = side;
   }
 
@@ -94,6 +108,7 @@ class Triangle extends Shape {
   }
 
   createPath() {
+    super.createPath();
     this.context.save();
     const h = this.side * (Math.sqrt(3) / 2);
 
@@ -115,14 +130,24 @@ class Triangle extends Shape {
 }
 
 class Star extends Shape {
-  constructor(context, cx, cy, spikes, outerRadius, innerRadius, fill = null) {
-    super(context, cx, cy, fill);
+  constructor(
+    context,
+    cx,
+    cy,
+    spikes,
+    outerRadius,
+    innerRadius,
+    rotationDegree = 0,
+    fill = null
+  ) {
+    super(context, cx, cy, rotationDegree, fill);
     this.spikes = spikes;
     this.outerRadius = outerRadius;
     this.innerRadius = innerRadius;
   }
 
   createPath() {
+    super.createPath();
     let x, y;
     let rot = (Math.PI / 2) * 3;
     const step = Math.PI / this.spikes;
@@ -141,6 +166,7 @@ class Star extends Shape {
     }
     this.context.lineTo(this.cx, this.cy - this.outerRadius);
     this.context.closePath();
+    this.context.restore();
   }
 }
 
@@ -148,7 +174,9 @@ const canvas = document.getElementById("main-canvas");
 const ctx = canvas.getContext("2d");
 
 const shapesState = [];
-shapesState.push(new Rect(ctx, 50, 50, 50, 50));
+let rect = new Rect(ctx, 50, 50, 50, 50);
+rect.rotate(15);
+shapesState.push(rect);
 shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
 shapesState.push(new Triangle(ctx, 50, 150, 150));
 shapesState.push(new Circle(ctx, 200, 200, 25));
