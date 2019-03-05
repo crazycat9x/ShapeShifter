@@ -1,11 +1,11 @@
 function getMousePos(canvas, evt) {
-  const rect = canvas.getBoundingClientRect(), // abs. size of element
-    scaleX = canvas.width / rect.width, // relationship bitmap vs. element for X
-    scaleY = canvas.height / rect.height; // relationship bitmap vs. element for Y
+  const rect = canvas.getBoundingClientRect(),
+    scaleX = canvas.width / rect.width,
+    scaleY = canvas.height / rect.height;
 
   return {
-    x: (evt.clientX - rect.left) * scaleX, // scale mouse coordinates after they have
-    y: (evt.clientY - rect.top) * scaleY // been adjusted to be relative to element
+    x: (evt.clientX - rect.left) * scaleX,
+    y: (evt.clientY - rect.top) * scaleY
   };
 }
 
@@ -203,11 +203,64 @@ class Star extends Shape {
 const canvas = document.getElementById("main-canvas");
 const ctx = canvas.getContext("2d");
 
-const shapesState = [];
-shapesState.push(new Rect(ctx, 25, 25, 50, 50));
-shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
-shapesState.push(new Triangle(ctx, 150, 150, 50));
-shapesState.push(new Circle(ctx, 200, 200, 25));
+let shapesState = JSON.parse(window.localStorage.getItem("shapesArray"));
+if (shapesState) {
+  shapesState = shapesState.map(shape => {
+    switch (shape.shapeType) {
+      case "Rect":
+        return new Rect(
+          ctx,
+          shape.cx,
+          shape.cy,
+          shape.width,
+          shape.height,
+          shape.scale,
+          shape.rotationDegree,
+          shape.fill
+        );
+      case "Circle":
+        return new Circle(
+          ctx,
+          shape.cx,
+          shape.cy,
+          shape.radius,
+          shape.scale,
+          shape.rotationDegree,
+          shape.fill
+        );
+      case "Triangle":
+        return new Triangle(
+          ctx,
+          shape.cx,
+          shape.cy,
+          shape.side,
+          shape.scale,
+          shape.rotationDegree,
+          shape.fill
+        );
+      case "Star":
+        return new Star(
+          ctx,
+          shape.cx,
+          shape.cy,
+          shape.spikes,
+          shape.outerRadius,
+          shape.innerRadius,
+          shape.scale,
+          shape.rotationDegree,
+          shape.fill
+        );
+    }
+  });
+} else {
+  shapesState = [];
+  shapesState.push(new Rect(ctx, 25, 25, 50, 50));
+  shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
+  shapesState.push(new Triangle(ctx, 150, 150, 50));
+  shapesState.push(new Circle(ctx, 200, 200, 25));
+}
+
+console.log(shapesState);
 
 canvas.width = 1024;
 canvas.height = 768;
@@ -302,6 +355,16 @@ document.getElementById("add-star").addEventListener("click", function() {
   shapesState.unshift(
     new Star(ctx, canvas.width / 2, canvas.height / 2, 5, 30, 15)
   );
+});
+
+window.addEventListener("beforeunload", () => {
+  const storage = JSON.stringify(
+    shapesState.map(shape => ({
+      shapeType: shape.constructor.name,
+      ...shape
+    }))
+  );
+  window.localStorage.setItem("shapesArray", storage);
 });
 
 requestAnimationFrame(updateLoop);
