@@ -256,7 +256,7 @@ if (shapesState) {
 }
 
 canvas.width = 1024;
-canvas.height = 768;
+canvas.height = 384;
 
 let selectedShape;
 let mousedDownShape;
