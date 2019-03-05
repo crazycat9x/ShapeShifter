@@ -73,17 +73,15 @@ class Shape {
 class Rect extends Shape {
   constructor(
     context,
-    x,
-    y,
+    cx,
+    cy,
     width,
     height,
     scale = 1,
     rotationDegree = 0,
     fill = null
   ) {
-    super(context, x + width / 2, y + height / 2, scale, rotationDegree, fill);
-    this.x = x;
-    this.y = y;
+    super(context, cx, cy, scale, rotationDegree, fill);
     this.width = width;
     this.height = height;
   }
@@ -128,9 +126,9 @@ class Circle extends Shape {
 class Triangle extends Shape {
   constructor(
     context,
-    side,
     cx,
     cy,
+    side,
     scale = 1,
     rotationDegree = 0,
     fill = null
@@ -208,7 +206,7 @@ const ctx = canvas.getContext("2d");
 const shapesState = [];
 shapesState.push(new Rect(ctx, 25, 25, 50, 50));
 shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
-shapesState.push(new Triangle(ctx, 50, 150, 150));
+shapesState.push(new Triangle(ctx, 150, 150, 50));
 shapesState.push(new Circle(ctx, 200, 200, 25));
 
 canvas.width = 1024;
@@ -282,6 +280,29 @@ document
   .addEventListener("click", function() {
     if (selectedShape) selectedShape.scaleBy(0.1);
   });
+
+document.getElementById("add-rect").addEventListener("click", function() {
+  console.log("add");
+  shapesState.unshift(
+    new Rect(ctx, canvas.width / 2, canvas.height / 2, 50, 50)
+  );
+});
+
+document.getElementById("add-circle").addEventListener("click", function() {
+  shapesState.unshift(new Circle(ctx, canvas.width / 2, canvas.height / 2, 25));
+});
+
+document.getElementById("add-triangle").addEventListener("click", function() {
+  shapesState.unshift(
+    new Triangle(ctx, canvas.width / 2, canvas.height / 2, 50)
+  );
+});
+
+document.getElementById("add-star").addEventListener("click", function() {
+  shapesState.unshift(
+    new Star(ctx, canvas.width / 2, canvas.height / 2, 5, 30, 15)
+  );
+});
 
 requestAnimationFrame(updateLoop);
 
