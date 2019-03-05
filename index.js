@@ -10,8 +10,10 @@ function getMousePos(canvas, evt) {
 }
 
 class Shape {
-  constructor(context, fill = null) {
+  constructor(context, cx, cy, fill = null) {
     this.context = context;
+    this.cx = cx;
+    this.cy = cy;
     this.fill = fill;
   }
 
@@ -21,8 +23,13 @@ class Shape {
     return contain;
   }
 
-  setCenterPosition() {
-    throw new Error("not implemented");
+  setCenterPosition(x, y) {
+    this.cx = x;
+    this.cy = y;
+  }
+
+  getCenterPosition() {
+    return { cx: this.cx, cy: this.cy };
   }
 
   createPath() {
@@ -49,6 +56,8 @@ class Rect extends Shape {
   }
 
   setCenterPosition(x, y) {
+    this.cx = x;
+    this.cy = y;
     this.x = Math.floor(x - this.width / 2);
     this.y = Math.floor(y - this.height / 2);
   }
@@ -62,15 +71,8 @@ class Rect extends Shape {
 
 class Circle extends Shape {
   constructor(context, cx, cy, radius, fill = null) {
-    super(context, fill);
-    this.cx = cx;
-    this.cy = cy;
+    super(context, cx, cy, fill);
     this.radius = radius;
-  }
-
-  setCenterPosition(x, y) {
-    this.cx = x;
-    this.cy = y;
   }
 
   createPath() {
@@ -82,10 +84,8 @@ class Circle extends Shape {
 
 class Triangle extends Shape {
   constructor(context, side, cx, cy, fill = null) {
-    super(context, fill);
+    super(context, cx, cy, fill);
     this.side = side;
-    this.cx = cx;
-    this.cy = cy;
   }
 
   setCenterPosition(x, y) {
@@ -116,17 +116,10 @@ class Triangle extends Shape {
 
 class Star extends Shape {
   constructor(context, cx, cy, spikes, outerRadius, innerRadius, fill = null) {
-    super(context, fill);
-    this.cx = cx;
-    this.cy = cy;
+    super(context, cx, cy, fill);
     this.spikes = spikes;
     this.outerRadius = outerRadius;
     this.innerRadius = innerRadius;
-  }
-
-  setCenterPosition(x, y) {
-    this.cx = x;
-    this.cy = y;
   }
 
   createPath() {
