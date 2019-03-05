@@ -310,14 +310,12 @@ document
 document
   .getElementById("rot-right-button")
   .addEventListener("click", function() {
-    console.log(selectedShape);
     if (selectedShape) selectedShape.rotate(15);
   });
 
 document
   .getElementById("scale-down-button")
   .addEventListener("click", function() {
-    console.log(selectedShape);
     if (selectedShape) selectedShape.scaleBy(-0.1);
   });
 
@@ -328,7 +326,6 @@ document
   });
 
 document.getElementById("add-rect").addEventListener("click", function() {
-  console.log("add");
   shapesState.unshift(
     new Rect(ctx, canvas.width / 2, canvas.height / 2, 50, 50)
   );
