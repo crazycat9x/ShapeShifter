@@ -347,6 +347,14 @@ document.getElementById("add-star").addEventListener("click", function() {
   );
 });
 
+document.getElementById("delete-shape").addEventListener("click", function() {
+  shapesState.some((shape, index, array) => {
+    if (shape === selectedShape) {
+      array.splice(index, 1);
+    }
+  });
+});
+
 window.addEventListener("beforeunload", () => {
   const storage = JSON.stringify(
     shapesState.map(shape => ({
