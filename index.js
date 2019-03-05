@@ -109,7 +109,6 @@ class Triangle extends Shape {
 
   createPath() {
     super.createPath();
-    this.context.save();
     const h = this.side * (Math.sqrt(3) / 2);
 
     this.context.translate(this.cx, this.cy);
@@ -185,30 +184,45 @@ canvas.width = 1024;
 canvas.height = 768;
 
 let selectedShape;
+let mousedDownShape;
 let mousedown = false;
 
-canvas.addEventListener("mousedown", event =>
-  shapesState.some(shape => {
+canvas.addEventListener("mousedown", event => {
+  const mouseDownOnShape = shapesState.some(shape => {
     mousedown = true;
     const { x, y } = getMousePos(canvas, event);
     if (shape.containPoint(x, y)) {
       selectedShape = shape;
+      mousedDownShape = shape;
       return true;
     }
-  })
-);
+  });
+  if (!mouseDownOnShape) selectedShape = null;
+});
 
 canvas.addEventListener("mouseup", () => {
   mousedown = false;
-  selectedShape = null;
+  mousedDownShape = null;
 });
 
 canvas.addEventListener("mousemove", () => {
-  if (mousedown && selectedShape) {
+  if (mousedown && mousedDownShape) {
     const { x, y } = getMousePos(canvas, event);
-    selectedShape.setCenterPosition(x, y);
+    mousedDownShape.setCenterPosition(x, y);
   }
 });
+
+document
+  .getElementById("rot-left-button")
+  .addEventListener("click", function() {
+    if (selectedShape) selectedShape.rotate(-15);
+  });
+
+document
+  .getElementById("rot-right-button")
+  .addEventListener("click", function() {
+    if (selectedShape) selectedShape.rotate(15);
+  });
 
 requestAnimationFrame(updateLoop);
 
