@@ -17,6 +17,8 @@ class Shape {
     this.scale = scale;
     this.rotationDegree = rotationDegree;
     this.fill = fill;
+    this.hovered = false;
+    this.selected = false;
   }
 
   containPoint(x, y) {
@@ -53,7 +55,9 @@ class Shape {
 
   draw() {
     this.context.save();
-    this.fill !== null && (this.context.fillStyle = fill);
+
+    if (this.fill) this.context.fillStyle = fill;
+    if (this.hovered) this.context.globalAlpha = 0.65;
 
     this.createPath();
     this.context.fill();
@@ -139,19 +143,12 @@ class Triangle extends Shape {
     super.createPath();
     const scaledSide = this.side * this.scale;
     const h = scaledSide * (Math.sqrt(3) / 2);
-
     this.context.translate(this.cx, this.cy);
-
     this.context.beginPath();
-
     this.context.moveTo(0, -h / 2);
     this.context.lineTo(-scaledSide / 2, h / 2);
     this.context.lineTo(scaledSide / 2, h / 2);
     this.context.lineTo(0, -h / 2);
-
-    this.context.stroke();
-    this.context.fill();
-
     this.context.closePath();
     this.context.restore();
   }
@@ -189,7 +186,6 @@ class Star extends Shape {
       y = this.cy + Math.sin(rot) * scaledOuterRadius;
       this.context.lineTo(x, y);
       rot += step;
-
       x = this.cx + Math.cos(rot) * scaledInnerRadius;
       y = this.cy + Math.sin(rot) * scaledInnerRadius;
       this.context.lineTo(x, y);
@@ -217,6 +213,7 @@ canvas.height = 768;
 
 let selectedShape;
 let mousedDownShape;
+let hoveredShape;
 let mousedown = false;
 
 canvas.addEventListener("mousedown", event => {
@@ -238,6 +235,14 @@ canvas.addEventListener("mouseup", () => {
 });
 
 canvas.addEventListener("mousemove", () => {
+  shapesState.some(shape => {
+    const { x, y } = getMousePos(canvas, event);
+    if (shape.containPoint(x, y)) {
+      hoveredShape = shape;
+      return true;
+    }
+  });
+
   if (mousedown && mousedDownShape) {
     const { x, y } = getMousePos(canvas, event);
     mousedDownShape.setCenterPosition(x, y);
@@ -275,6 +280,7 @@ requestAnimationFrame(updateLoop);
 function updateLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let shape of shapesState) {
+    shape.hovered = shape === hoveredShape;
     shape.draw();
   }
   requestAnimationFrame(updateLoop);
