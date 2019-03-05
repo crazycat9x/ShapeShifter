@@ -137,11 +137,6 @@ class Triangle extends Shape {
     this.side = side;
   }
 
-  setCenterPosition(x, y) {
-    this.cx = x;
-    this.cy = y;
-  }
-
   createPath() {
     super.createPath();
     const scaledSide = this.side * this.scale;
@@ -260,8 +255,6 @@ if (shapesState) {
   shapesState.push(new Circle(ctx, 200, 200, 25));
 }
 
-console.log(shapesState);
-
 canvas.width = 1024;
 canvas.height = 768;
 
@@ -379,3 +372,8 @@ function updateLoop() {
   }
   requestAnimationFrame(updateLoop);
 }
+
+// UNIT TEST SAMPLE
+// test('adds 1 + 2 to equal 3', () => {
+//   expect(sum(1, 2)).toBe(3);
+// });
