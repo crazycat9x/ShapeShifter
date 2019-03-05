@@ -57,9 +57,14 @@ class Shape {
     this.context.save();
 
     if (this.fill) this.context.fillStyle = fill;
-    if (this.hovered) this.context.globalAlpha = 0.65;
+    if (this.hovered && !this.selected) this.context.globalAlpha = 0.65;
 
     this.createPath();
+    if (this.selected) {
+      this.context.lineWidth = 15;
+      this.context.strokeStyle = "red";
+      this.context.stroke();
+    }
     this.context.fill();
     this.context.restore();
   }
@@ -235,13 +240,15 @@ canvas.addEventListener("mouseup", () => {
 });
 
 canvas.addEventListener("mousemove", () => {
-  shapesState.some(shape => {
+  const hoveredOnShape = shapesState.some(shape => {
     const { x, y } = getMousePos(canvas, event);
     if (shape.containPoint(x, y)) {
       hoveredShape = shape;
       return true;
     }
   });
+
+  if (!hoveredOnShape) hoveredShape = null;
 
   if (mousedown && mousedDownShape) {
     const { x, y } = getMousePos(canvas, event);
@@ -281,6 +288,7 @@ function updateLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let shape of shapesState) {
     shape.hovered = shape === hoveredShape;
+    shape.selected = shape === selectedShape;
     shape.draw();
   }
   requestAnimationFrame(updateLoop);
