@@ -57,7 +57,7 @@ class Shape {
     this.context.save();
 
     if (this.fill) this.context.fillStyle = fill;
-    if (this.hovered && !this.selected) this.context.globalAlpha = 0.65;
+    if (this.hovered) this.context.globalAlpha = 0.65;
 
     this.createPath();
     if (this.selected) {
@@ -206,9 +206,7 @@ const canvas = document.getElementById("main-canvas");
 const ctx = canvas.getContext("2d");
 
 const shapesState = [];
-let rect = new Rect(ctx, 50, 50, 50, 50, 2);
-rect.rotate(15);
-shapesState.push(rect);
+shapesState.push(new Rect(ctx, 25, 25, 50, 50));
 shapesState.push(new Star(ctx, 100, 100, 5, 30, 15));
 shapesState.push(new Triangle(ctx, 50, 150, 150));
 shapesState.push(new Circle(ctx, 200, 200, 25));
@@ -222,10 +220,13 @@ let hoveredShape;
 let mousedown = false;
 
 canvas.addEventListener("mousedown", event => {
-  const mouseDownOnShape = shapesState.some(shape => {
+  const mouseDownOnShape = shapesState.some((shape, index, array) => {
     mousedown = true;
     const { x, y } = getMousePos(canvas, event);
     if (shape.containPoint(x, y)) {
+      //Move shape to front of screen
+      chosenShape = array.splice(index, 1)[0];
+      array.unshift(chosenShape);
       selectedShape = shape;
       mousedDownShape = shape;
       return true;
@@ -286,7 +287,8 @@ requestAnimationFrame(updateLoop);
 
 function updateLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let shape of shapesState) {
+  for (let i = shapesState.length - 1; i >= 0; i--) {
+    const shape = shapesState[i];
     shape.hovered = shape === hoveredShape;
     shape.selected = shape === selectedShape;
     shape.draw();
